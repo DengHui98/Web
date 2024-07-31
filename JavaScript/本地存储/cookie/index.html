@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<title>使用cookie实现本次存储</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			#container {
+				position: relative;
+				top: 100px;
+				left: 100px;
+				width: 100px;
+				height: 100px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				font-size: 24px;
+				background-color: lightblue;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container"></div>
+		<script>
+			const handleCookie = {
+				set: function (name, value) {
+					document.cookie = `${name}=${value};max-age:${24 * 60 * 60}`;
+				},
+				get: function (name) {
+					const cookie = document.cookie;
+					const cookieList = cookie.split(";");
+					for (let i = 0; i < cookieList.length; i++) {
+						const res = cookieList[i].split("=");
+						if (res[0].trim() === name) {
+							return res[1];
+						}
+					}
+				},
+				remove: function (name) {
+					document.cookie = `${name}=''; max-age=0;`;
+				},
+			};
+			const drag = {
+				init: function (dom) {
+					// 初始化
+					this.dom = dom;
+					this.dom.onmousedown = this.mousedown.bind(this);
+					// 读取cookie设置初始位置
+					this.dom.style.left = handleCookie.get("left") + "px";
+					this.dom.style.top = handleCookie.get("top") + "px";
+				},
+				setView: function () {
+					const view = this.dom.getBoundingClientRect();
+					this.left = view.left;
+					this.top = view.top;
+				},
+				mousedown: function (e) {
+					document.onmousemove = this.mousemove.bind(this);
+					this.dom.onmouseup = this.mouseup.bind(this);
+					this.downX = e.clientX;
+					this.downY = e.clientY;
+					// 重新设置left、top 的值
+					this.setView();
+				},
+				mousemove: function (e) {
+					const mouseX = e.clientX - this.downX;
+					const mouseY = e.clientY - this.downY;
+					this.dom.style.left = `${this.left + mouseX}px`;
+					this.dom.style.top = `${this.top + mouseY}px`;
+				},
+				mouseup: function () {
+					// 重新设置left、top 的值
+					this.setView();
+					// 将left、top 存储到 cookie
+					handleCookie.set("left", this.left);
+					handleCookie.set("top", this.top);
+					document.onmousemove = null;
+				},
+			};
+			drag.init(document.getElementById("container"));
+		</script>
+	</body>
+</html>
