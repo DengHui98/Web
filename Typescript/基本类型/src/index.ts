@@ -189,4 +189,48 @@ const createPointer: GetPointerFn = (x, y) => {
   return { x, y };
 };
 
+// 交叉类型
+// 将两个类型合并，同时包含 A B 类型
+type A = {
+  name: string,
+  age: number
+};
 
+type B = {
+  sex: "男"| "女"
+}
+
+type C = A & B;
+
+let verb1:C = {
+  name: "jacker",
+  age: 20,
+  sex: "男" 
+}
+
+// 交叉类型和联合类型的区别
+// 交叉类型是两者都
+// 联合类型是两者或
+
+
+// 类型断言
+// 编译器会帮助我们自动推算类型，有时候我们确定类型，就可以使用类型断言，告诉编译器我们所使用的类型
+let as1: any;
+as1 = "hello world";
+// 写法 1: as
+// 建议使用 as， 应为react中的jsx语法和<类型>的值方式有奇异
+// console.log((as1 as string).toLocaleUpperCase());
+
+// 写法 2: <类型>
+// console.log((<string>as1).toLocaleUpperCase());
+
+// 非空断言
+// 写法 值!
+// 举例, 获取DOM元素，可能是类型或者 null， 在确定获取到的情况下，使用非空断言
+
+let inputDOM = document.querySelector("input");
+inputDOM!.addEventListener("change", function() {
+  console.log(this.value);
+})
+
+// 可选链操作符 ES2020
